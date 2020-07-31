@@ -7,11 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/git-lfs/wildmatch"
 	"github.com/mholt/archiver/v3"
 	"github.com/urfave/cli/v2"
 )
@@ -46,7 +46,7 @@ func pack(c *cli.Context) error {
 		src, dest = c.Args().Get(0), c.Args().Get(1)
 	}
 
-	accept, err := files(src)
+	accept, err := files(src, ignoreList.Value())
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func pack(c *cli.Context) error {
 	defer os.RemoveAll(tmp)
 
 	rootDir := accept[0]
-	basePath, err := createMainDir(dest, tmp)
+	basePath, err := createRootDir(dest, tmp)
 	if err != nil {
 		return err
 	}
@@ -78,10 +78,9 @@ func pack(c *cli.Context) error {
 	return archiver.Archive([]string{basePath}, dest)
 }
 
-func files(path string) ([]string, error) {
+func files(path string, avoid []string) ([]string, error) {
 	var accept []string
 
-	avoid := ignore()
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -96,12 +95,9 @@ func files(path string) ([]string, error) {
 			return nil
 		}
 
-		for pattern := range avoid {
-			matched, err := regexp.MatchString(pattern, path)
-			if err != nil {
-				return err
-			}
-			if matched {
+		for _, pattern := range avoid {
+			wm := wildmatch.NewWildmatch(pattern, wildmatch.Basename)
+			if wm.Match(path) {
 				if isDir(path) {
 					return filepath.SkipDir
 				}
@@ -117,10 +113,10 @@ func files(path string) ([]string, error) {
 	return accept, err
 }
 
-func ignore() list {
+func ignore(files []string) list {
 	var avoid = make(list)
 
-	for _, file := range ignoreList.Value() {
+	for _, file := range files {
 		path := parsePath(file)
 
 		func() {
@@ -132,7 +128,7 @@ func ignore() list {
 
 			scanner := bufio.NewScanner(f)
 			for scanner.Scan() {
-				avoid[filepath.Clean(scanner.Text())] = struct{}{}
+				avoid[scanner.Text()] = struct{}{}
 			}
 		}()
 	}
@@ -140,10 +136,9 @@ func ignore() list {
 	return avoid
 }
 
-// Only for unix based systems.
 func isHidden(path string) bool {
 	if len(path) == 0 {
-		return false
+		return true
 	}
 
 	base := filepath.Base(path)
@@ -156,7 +151,7 @@ func parsePath(path string) string {
 	if err != nil {
 		return path
 	}
-	return strings.ReplaceAll(path, "~", homeDir)
+	return filepath.Clean(strings.ReplaceAll(path, "~", homeDir))
 }
 
 func defaultFileName() string {
@@ -177,7 +172,7 @@ func isDir(path string) bool {
 	return fi.Mode().IsDir()
 }
 
-func createMainDir(dest, path string) (string, error) {
+func createRootDir(dest, path string) (string, error) {
 	name, ext := filepath.Base(dest), filepath.Ext(dest)
 
 	name = strings.Replace(name, ext, "", 1)
