@@ -10,17 +10,17 @@ import (
 func Test_files(t *testing.T) {
 	t.Parallel()
 
-	accept, err := files("./testdata/zipme", []string{"*.png", "*.pdf", "**/folder2/"})
+	accept, err := files("./testdata/zipme", []string{"./testdata/zipme/.ignore", "./testdata/zipme/.ignore1"})
 
 	assert.Nil(t, err)
-	assert.Equal(t, len(accept), 9)
+	assert.Equal(t, 9, len(accept))
 }
 
 func Test_ignore(t *testing.T) {
 	t.Parallel()
 
 	avoid := ignore([]string{"./testdata/zipme/.ignore", "./testdata/zipme/.ignore1", "./testdata/unknown"})
-	keys := []string{"*.png", "*.pdf", "folder2/"}
+	keys := []string{"*.png", "*.pdf", "folder2"}
 
 	assert.Equal(t, 3, len(avoid))
 

@@ -23,7 +23,7 @@ var ignoreList cli.StringSlice
 func main() {
 	app := &cli.App{
 		Name:  "pack",
-		Usage: "Pack compresses file/folder ignoring any hidden and given files",
+		Usage: "Pack create archives while ignoring any hidden or unnecessary files and folders",
 		Flags: []cli.Flag{
 			&cli.StringSliceFlag{
 				Name:        "ignore",
@@ -78,9 +78,10 @@ func pack(c *cli.Context) error {
 	return archiver.Archive([]string{basePath}, dest)
 }
 
-func files(path string, avoid []string) ([]string, error) {
+func files(path string, ign []string) ([]string, error) {
 	var accept []string
 
+	avoid := ignore(ign)
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -95,8 +96,9 @@ func files(path string, avoid []string) ([]string, error) {
 			return nil
 		}
 
-		for _, pattern := range avoid {
+		for pattern := range avoid {
 			wm := wildmatch.NewWildmatch(pattern, wildmatch.Basename)
+
 			if wm.Match(path) {
 				if isDir(path) {
 					return filepath.SkipDir
@@ -128,7 +130,7 @@ func ignore(files []string) list {
 
 			scanner := bufio.NewScanner(f)
 			for scanner.Scan() {
-				avoid[scanner.Text()] = struct{}{}
+				avoid[filepath.Clean(scanner.Text())] = struct{}{}
 			}
 		}()
 	}
@@ -149,7 +151,7 @@ func isHidden(path string) bool {
 func parsePath(path string) string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return path
+		return filepath.Clean(path)
 	}
 	return filepath.Clean(strings.ReplaceAll(path, "~", homeDir))
 }
@@ -175,9 +177,7 @@ func isDir(path string) bool {
 func createRootDir(dest, path string) (string, error) {
 	name, ext := filepath.Base(dest), filepath.Ext(dest)
 
-	name = strings.Replace(name, ext, "", 1)
-
-	basePath := path + "/" + name
+	basePath := path + "/" + strings.Replace(name, ext, "", 1)
 
 	return basePath, exec.Command("mkdir", "-p", basePath).Run()
 }
