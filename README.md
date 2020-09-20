@@ -45,5 +45,5 @@ file.txt
 
 The following command will create `destination.zip` file by ignoring all patterns mentioned in `.gitignore` and `.ignoremetoo`.
 ```sh
-$ pack -ig .gitignore -ig .ignoremetoo /path/to/file-to-compress /part/to/destination.zip
+$ pack -ig .gitignore -ig .ignoremetoo /path/to/file-to-compress /path/to/destination.zip
 ```
