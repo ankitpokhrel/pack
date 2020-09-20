@@ -1,8 +1,8 @@
-### Pack
+## Pack
 
 A small utility to create archives while ignoring any hidden or unnecessary files and folders. It uses git style pattern matching.
 
-#### Install
+### Installation
 
 Install the runnable binary to your `$GOPATH/bin`.
 
@@ -10,7 +10,7 @@ Install the runnable binary to your `$GOPATH/bin`.
 $ go install github.com/ankitpokhrel/pack
 ```
 
-#### Usage
+### Usage
 
 ```sh
 NAME:
@@ -27,7 +27,7 @@ GLOBAL OPTIONS:
    --help, -h                  show help (default: false)
 ```
 
-##### Example
+### Example
 
 Given a `.gitignore` and `.ignoremetoo` file:
 ```sh
@@ -45,5 +45,5 @@ file.txt
 
 The following command will create `destination.zip` file by ignoring all patterns mentioned in `.gitignore` and `.ignoremetoo`.
 ```sh
-$ pack -ig .gitignore -ig .ignoremetoo /path/to/file-to-compress /part/to/destination.zip
+$ pack -ig .gitignore -ig .ignoremetoo /path/to/file-to-compress /path/to/destination.zip
 ```
