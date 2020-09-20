@@ -10,6 +10,8 @@ Install the runnable binary to your `$GOPATH/bin`.
 $ go install github.com/ankitpokhrel/pack
 ```
 
+Or, download the [latest release](https://github.com/ankitpokhrel/pack/releases).
+
 ### Usage
 
 ```sh
