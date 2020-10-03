@@ -72,12 +72,6 @@ func Test_parsePath(t *testing.T) {
 	}
 }
 
-func Test_defaultFileName(t *testing.T) {
-	t.Parallel()
-
-	assert.Regexp(t, "archive-[0-9]+.zip", defaultFileName())
-}
-
 func Test_isDir(t *testing.T) {
 	t.Parallel()
 
