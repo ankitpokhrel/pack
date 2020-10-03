@@ -7,9 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/git-lfs/wildmatch"
 	"github.com/mholt/archiver/v3"
@@ -22,8 +20,9 @@ var ignoreList cli.StringSlice
 
 func main() {
 	app := &cli.App{
-		Name:  "pack",
-		Usage: "Pack create archives while ignoring any hidden or unnecessary files and folders",
+		Name:      "pack",
+		Usage:     "Pack create archives while ignoring any hidden or unnecessary files and folders",
+		ArgsUsage: "<src> <dest>",
 		Flags: []cli.Flag{
 			&cli.StringSliceFlag{
 				Name:        "ignore",
@@ -41,10 +40,11 @@ func main() {
 }
 
 func pack(c *cli.Context) error {
-	src, dest := ".", defaultFileName()
-	if c.NArg() > 0 {
-		src, dest = c.Args().Get(0), c.Args().Get(1)
+	if c.NArg() != 2 {
+		return cli.ShowAppHelp(c)
 	}
+
+	src, dest := c.Args().Get(0), c.Args().Get(1)
 
 	accept, err := files(src, ignoreList.Value())
 	if err != nil {
@@ -154,16 +154,6 @@ func parsePath(path string) string {
 		return filepath.Clean(path)
 	}
 	return filepath.Clean(strings.ReplaceAll(path, "~", homeDir))
-}
-
-func defaultFileName() string {
-	var name strings.Builder
-
-	name.WriteString("archive-")
-	name.WriteString(strconv.Itoa((int)(time.Now().Unix())))
-	name.WriteString(".zip")
-
-	return name.String()
 }
 
 func isDir(path string) bool {

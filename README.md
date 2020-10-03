@@ -19,7 +19,7 @@ NAME:
    pack - Pack create archives while ignoring any hidden or unnecessary files and folders
 
 USAGE:
-   pack [global options] command [command options] [arguments...]
+   pack [global options] command [command options] <src> <dest>
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
