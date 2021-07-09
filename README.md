@@ -7,7 +7,7 @@ A small utility to create archives while ignoring any hidden or unnecessary file
 Install the runnable binary to your `$GOPATH/bin`.
 
 ```sh
-$ go install github.com/ankitpokhrel/pack
+go get github.com/ankitpokhrel/pack
 ```
 
 Or, download the [latest release](https://github.com/ankitpokhrel/pack/releases).
