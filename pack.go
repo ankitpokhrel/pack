@@ -45,6 +45,13 @@ func pack(c *cli.Context) error {
 	}
 
 	src, dest := c.Args().Get(0), c.Args().Get(1)
+	if src == "." || src == "./" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		src = cwd
+	}
 
 	accept, err := files(src, ignoreList.Value())
 	if err != nil {
