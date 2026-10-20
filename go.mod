@@ -1,6 +1,6 @@
 module github.com/ankitpokhrel/pack
 
-go 1.18
+go 1.24
 
 require (
 	github.com/git-lfs/wildmatch v1.0.4
@@ -15,7 +15,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/klauspost/compress v1.15.9 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
